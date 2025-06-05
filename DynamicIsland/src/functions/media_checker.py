@@ -160,6 +160,7 @@ class MediaPlayerController:
         
         while True:
             try:
+                
                 prev_session_id = self.session.source_app_user_model_id if self.session else None
                 await self.initialize()
                 new_session_id = self.session.source_app_user_model_id if self.session else None
@@ -178,6 +179,8 @@ class MediaPlayerController:
                         await on_nothing()
                     await asyncio.sleep(interval)
                     continue
+                sound = await self.get_session_volume()
+                print(f"Current sound level: {sound}")
 
                 current_track = await self.get_current_track_info()
                 if not current_track:
@@ -212,4 +215,24 @@ class MediaPlayerController:
                         await on_nothing()
                 
             await asyncio.sleep(interval)
+
+    async def get_session_volume(self) -> Optional[float]:
+        """
+        Returns the current volume level (0.0 to 1.0) for the active media session, if supported.
+        Returns None if not available.
+        """
+        if not self.session:
+            return None
+        try:
+            playback_info = self.session.get_playback_info()
+            # Some sessions may expose volume info via playback_info
+            if hasattr(playback_info, 'playback_volume'):
+                # Not standard, but check if available
+                return float(playback_info.playback_volume)
+            # Windows GlobalSystemMediaTransportControlsSession does not expose per-session volume directly
+            # so this may not be available for all apps
+            return None
+        except Exception as e:
+            print(f"Error getting session volume: {e}")
+            return None
 
