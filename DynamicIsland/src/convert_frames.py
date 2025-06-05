@@ -1,8 +1,11 @@
+import os
 import re
 import json
 
 def convert_frames_to_dict(path: str = "frames_open") -> dict:
     frames_path = f"assets/animation_data/{path}.txt"
+    frames_path = os.path.abspath(frames_path)
+    print(f"Converting frames from {frames_path} to dictionary format...")
 
     frames_dict = {}
     

@@ -88,11 +88,10 @@ class MainApp:
         await self.start_monitoring_sound()
 
     async def start_monitoring_sound(self):
-        async def on_track_change(track_info):
-            base64 = await self.controller.get_current_cover_base64()
-            if base64:
-               await self.app.change_track(base64)
-        
+        async def on_track_change(track_info, cover_base64):
+            if cover_base64:
+               await self.app.change_track(cover_base64)
+
         async def on_playback_state_change(is_playing):
             self.app.playing_pause(is_playing)
         
@@ -107,4 +106,4 @@ class MainApp:
             print(f"Monitoring stopped due to error: {e}")
 
 if __name__ == "__main__":
-    ft.app(target=MainApp)
+    ft.app(target=MainApp,assets_dir="assets")

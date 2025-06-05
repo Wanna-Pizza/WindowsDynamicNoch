@@ -140,33 +140,30 @@ class MediaPlayerController:
             await self.session.try_change_playback_position_async(int(seconds * 10_000_000))
             
     async def monitor_track_changes(self, change_callback=None, position_callback=None, 
-                                   playback_state_callback=None, on_nothing=None, interval=0.1):
-        # Initial setup
+                               playback_state_callback=None, on_nothing=None, interval=0.1):
         if not await self.initialize():
             if on_nothing:
                 await on_nothing()
         else:
             if self.session:
                 current_track = await self.get_current_track_info()
+                current_cover = await self.get_current_cover_base64()
                 if current_track and change_callback:
-                    await change_callback(current_track)
+                    await change_callback(current_track, current_cover)
                 if current_track and playback_state_callback:
                     await playback_state_callback(current_track['playback_status'] == 'PLAYING')
         
         last_track = None
         last_session_id = None
         last_playback_state = None
+        last_cover = None
         
         while True:
             try:
-                current_time = asyncio.get_event_loop().time()
-                
-                # Refresh sessions unconditionally
                 prev_session_id = self.session.source_app_user_model_id if self.session else None
                 await self.initialize()
                 new_session_id = self.session.source_app_user_model_id if self.session else None
 
-                # Session changed
                 if prev_session_id != new_session_id:
                     if on_nothing:
                         await on_nothing()
@@ -174,12 +171,8 @@ class MediaPlayerController:
                     last_track = None
                     last_session_id = None
                     last_playback_state = None
+                    last_cover = None
                 
-                if not self.session and on_nothing:
-                    await on_nothing()
-                    await asyncio.sleep(interval)
-                    continue
-
                 if not self.session:
                     if on_nothing:
                         await on_nothing()
@@ -188,28 +181,35 @@ class MediaPlayerController:
 
                 current_track = await self.get_current_track_info()
                 if not current_track:
+                    if on_nothing:
+                        await on_nothing()
                     await asyncio.sleep(interval)
                     continue
                 
-                # Track changes
+                current_cover = await self.get_current_cover_base64()
+
                 if (not last_track or 
                     last_session_id != current_track['session_id'] or
                     current_track['title'] != last_track['title'] or
-                    current_track['artist'] != last_track['artist']):
+                    current_track['artist'] != last_track['artist'] or
+                    current_cover != last_cover):
                     if change_callback:
-                        await change_callback(current_track)
+                        await change_callback(current_track, current_cover)
                     last_track = current_track
                     last_session_id = current_track['session_id']
+                    last_cover = current_cover
 
-                # Playback state changes
                 if (last_playback_state != current_track['playback_status'] and 
                     playback_state_callback):
                     await playback_state_callback(current_track['playback_status'] == 'PLAYING')
                     last_playback_state = current_track['playback_status']
-                
+                    
             except Exception as e:
+                print(f"Error in monitor_track_changes: {e}")
                 if "RPC server" in str(e):
                     self.session = None
-            
+                    if on_nothing:
+                        await on_nothing()
+                
             await asyncio.sleep(interval)
 
