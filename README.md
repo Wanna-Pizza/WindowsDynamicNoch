@@ -43,10 +43,6 @@ Dynamicisland is a cross-platform application built with Flet, implementing an i
   ```
   uv run flet run
   ```
-- Web:
-  ```
-  uv run flet run --web
-  ```
 
 ### Poetry
 
@@ -57,10 +53,6 @@ Dynamicisland is a cross-platform application built with Flet, implementing an i
 - Desktop:
   ```
   poetry run flet run
-  ```
-- Web:
-  ```
-  poetry run flet run --web
   ```
 
 More details: [Getting Started Guide](https://flet.dev/docs/getting-started/)
