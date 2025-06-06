@@ -6,7 +6,7 @@
 
 ## Description
 
-## CURRENTLY NOT POSSIBLE TO BUILD 
+## CURRENTLY NOT POSSIBLE TO BUILD DUE COMPLAINS FLET ON PYWIN32
 
 Dynamicisland is a cross-platform application built with Flet, implementing an iOS-style Dynamic Island UI/UX. **Currently, the app only works on Windows.** The app can run as a desktop or web application and can be built for Android, iOS, macOS, Linux, and Windows (Windows support only).
 
