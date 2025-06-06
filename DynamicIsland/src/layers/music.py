@@ -1,5 +1,7 @@
+import base64
+import io
 import flet as ft
-
+from PIL import Image
 
 class SoundControl(ft.Container):
     """Container for sound control buttons"""
@@ -27,14 +29,15 @@ class SoundControl(ft.Container):
     
     def toggle_functions_play_pause(self, is_playing):
         if is_playing:
-            self.play_pause.content = ft.Icon(ft.Icons.PAUSE, color="white,0.8")
+            self.play_pause.content.name = ft.Icons.PAUSE
             self.play_pause.on_click = self.__on_pause
             self.is_playing = False
         else:
-            self.play_pause.content = ft.Icon(ft.Icons.PLAY_ARROW, color="white,0.8")
+            self.play_pause.content.name = ft.Icons.PLAY_ARROW
             self.play_pause.on_click = self.__on_play
             self.is_playing = True
         self.play_pause.update()
+    
     
     def __on_play(self, e):
         if self.on_play:
@@ -64,11 +67,49 @@ class SoundControl(ft.Container):
                 await self.on_prev()
             self.page.run_task(on_prev)
 
+
+    @staticmethod
+    def get_contrast_color(base64_image: str) -> str:
+        image_data = base64.b64decode(base64_image)
+        image = Image.open(io.BytesIO(image_data))
+        
+        image = image.convert("RGB")
+        width, height = image.size
+        
+        center_x, center_y = width // 2, height // 2
+        
+        square_size = 10
+        left = max(center_x - square_size // 2, 0)
+        top = max(center_y - square_size // 2, 0)
+        right = min(center_x + square_size // 2, width)
+        bottom = min(center_y + square_size // 2, height)
+        
+        cropped_image = image.crop((left, top, right, bottom))
+        pixels = list(cropped_image.getdata())
+        
+        avg_pixel = tuple(sum(channel) // len(pixels) for channel in zip(*pixels))
+        
+        brightness = (avg_pixel[0] * 0.299 + avg_pixel[1] * 0.587 + avg_pixel[2] * 0.114)
+        
+        color = 'black' if brightness > 150 else 'white,0.8'  # Порог можно настроить
+        return color
+
+    
+    def change_color_buttons(self, color):
+        """Change the color of the control buttons."""
+        self.play_pause.content.color = color
+        self.next_track.content.color = color
+        self.prev_track.content.color = color
+        self.next_track.content.update()
+        self.prev_track.content.update()
+        self.play_pause.content.update()
+
     def change_music_cover(self, music_cover_base64):
         self.music_cover_base64 = music_cover_base64
         self.music_cover.content = ft.Image(src_base64=self.music_cover_base64)
         self.image_bg_cover.src_base64 = self.music_cover_base64
         self.image_bg_cover.update()
+        self.change_color_buttons(self.get_contrast_color(self.music_cover_base64))
         self.music_cover.update()
     
     def __content(self):
@@ -82,13 +123,13 @@ class SoundControl(ft.Container):
             alignment=ft.alignment.center,
             on_click=self.__on_play,
         )
-        next_track = ft.Container(
+        self.next_track = ft.Container(
             ft.Icon(ft.Icons.SKIP_NEXT,color="white,0.8"),
             alignment=ft.alignment.center,
             on_click=self.__on_next,
         )
 
-        prev_track = ft.Container(
+        self.prev_track = ft.Container(
             ft.Icon(ft.Icons.SKIP_NEXT,color="white,0.8"),
             scale=-1,
             on_click=self.__on_prev,
@@ -105,7 +146,6 @@ class SoundControl(ft.Container):
                     sigma_y=10,
                     tile_mode=ft.BlurTileMode.REPEATED
                 ),
-                bgcolor="black,0.5"
             )
         ],alignment=ft.alignment.center)
 
@@ -114,9 +154,9 @@ class SoundControl(ft.Container):
             
             ft.Container(self.music_cover,padding=4),
             ft.Row([
-                prev_track,
+                self.prev_track,
                 self.play_pause,
-                next_track,    
+                self.next_track,    
             ],alignment=ft.MainAxisAlignment.CENTER),
 
         ])

@@ -180,7 +180,6 @@ class MediaPlayerController:
                     await asyncio.sleep(interval)
                     continue
                 sound = await self.get_session_volume()
-                print(f"Current sound level: {sound}")
 
                 current_track = await self.get_current_track_info()
                 if not current_track:

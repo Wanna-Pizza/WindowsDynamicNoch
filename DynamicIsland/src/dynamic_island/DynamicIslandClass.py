@@ -110,8 +110,8 @@ class DynamicIslandApp(ft.Container):
             height=self.height_dynamic,
             bgcolor="black",
             shadow=ft.BoxShadow(
-                spread_radius=0,blur_radius=10,
-                color=ft.Colors.BLACK
+                spread_radius=0,blur_radius=20,
+                color="blackm,0.2"
             ),
             alignment=ft.alignment.center,
             border_radius=ft.border_radius.only(
