@@ -111,7 +111,7 @@ class DynamicIslandApp(ft.Container):
             bgcolor="black",
             shadow=ft.BoxShadow(
                 spread_radius=0,blur_radius=20,
-                color="blackm,0.2"
+                color="black,0.2"
             ),
             alignment=ft.alignment.center,
             border_radius=ft.border_radius.only(
@@ -165,38 +165,6 @@ class DynamicIslandApp(ft.Container):
         except Exception as e:
             print(f"Error in init_sound: {e}")
 
-    def get_dominant_color(self, base64_string):
-        try:
-            img_data = base64.b64decode(base64_string)
-            img = Image.open(io.BytesIO(img_data))
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
-                
-            img = img.resize((100, 100))
-            pixels = np.array(img)
-            pixels = pixels.reshape(-1, 3)
-            
-            brightness = 0.299 * pixels[:, 0] + 0.587 * pixels[:, 1] + 0.114 * pixels[:, 2]
-            
-            brightness_threshold = np.percentile(brightness, 90)
-            bright_pixels = pixels[brightness >= brightness_threshold]
-            
-            if len(bright_pixels) == 0:
-                count = Counter(map(tuple, pixels))
-                most_common_color = count.most_common(1)[0][0]
-                hex_color = '#{:02x}{:02x}{:02x}'.format(*most_common_color)
-                return hex_color
-                
-            count = Counter(map(tuple, bright_pixels))
-            most_common_bright_color = count.most_common(1)[0][0]
-            
-            hex_color = '#{:02x}{:02x}{:02x}'.format(*most_common_bright_color)
-            return hex_color
-            
-        except Exception as e:
-            print(f"Error extracting dominant color: {e}")
-            return "black"  # Default to white on error
-
 
 class ControlDynamicIsland(DynamicIslandApp):
     def __init__(self,controller_media=None):
@@ -224,7 +192,6 @@ class ControlDynamicIsland(DynamicIslandApp):
             await self.reset_animation()
             self.content_control.change_music_cover(music_cover_base64)
             self.page.run_thread(self.play_animation,"show_side")
-            await self.layer.change_bgcolor(self.get_dominant_color(music_cover_base64))
             await asyncio.sleep(0.2)
             await layer.animate_layer()
             self.is_playing = True

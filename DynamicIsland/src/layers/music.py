@@ -78,7 +78,7 @@ class SoundControl(ft.Container):
         
         center_x, center_y = width // 2, height // 2
         
-        square_size = 10
+        square_size = 30
         left = max(center_x - square_size // 2, 0)
         top = max(center_y - square_size // 2, 0)
         right = min(center_x + square_size // 2, width)
@@ -142,9 +142,9 @@ class SoundControl(ft.Container):
                 width=500,
                 height=500,
                 blur=ft.Blur(
-                    sigma_x=10,
-                    sigma_y=10,
-                    tile_mode=ft.BlurTileMode.REPEATED
+                    sigma_x=50,
+                    sigma_y=50,
+                    tile_mode=ft.BlurTileMode.CLAMP
                 ),
             )
         ],alignment=ft.alignment.center)
