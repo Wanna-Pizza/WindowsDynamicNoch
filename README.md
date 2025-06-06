@@ -8,6 +8,11 @@
 
 Dynamicisland is a cross-platform application built with Flet, implementing an iOS-style Dynamic Island UI/UX. **Currently, the app only works on Windows.** The app can run as a desktop or web application and can be built for Android, iOS, macOS, Linux, and Windows (Windows support only).
 
+
+https://github.com/user-attachments/assets/045d5094-4772-465e-82ca-d879ad286d93
+
+
+
 ## Features & Functionality
 
 - **Dynamic Island UI**: Animates and displays a floating island element similar to iOS, showing notifications, media controls, and contextual information.
