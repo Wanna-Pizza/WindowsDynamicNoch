@@ -26,7 +26,6 @@ https://github.com/user-attachments/assets/045d5094-4772-465e-82ca-d879ad286d93
 
 ## Project Structure
 
-- `main_curves.py` — main entry point
 - `DynamicIsland/` — application source code
   - `src/` — core logic, functions, animations, assets
     - `animation_functions/` — animation management
