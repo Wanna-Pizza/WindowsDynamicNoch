@@ -27,8 +27,6 @@ Dynamicisland is a cross-platform application built with Flet, implementing an i
     - `dynamic_island/` — main Dynamic Island class
     - `functions/` — utility and media checker functions
     - `layers/` — UI layers (e.g., music, notifications)
-    - `storage/` — persistent and temporary data
-  - `config/` — configuration files
 - `Blender Files/` — Blender files for animation creation
 
 ## How It Works
