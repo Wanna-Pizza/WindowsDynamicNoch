@@ -52,7 +52,7 @@ class MainApp:
         self.page.window.top = 0
         self.page.update()
 
-        rect_width, rect_height = 300, 60
+        rect_width, rect_height = 300, 40
         center_x = screen_width // 2
         rect_left = center_x - rect_width // 2
         

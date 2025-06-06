@@ -144,7 +144,7 @@ class SoundControl(ft.Container):
                 blur=ft.Blur(
                     sigma_x=50,
                     sigma_y=50,
-                    tile_mode=ft.BlurTileMode.CLAMP
+                    tile_mode=ft.BlurTileMode.REPEATED
                 ),
             )
         ],alignment=ft.alignment.center)
