@@ -9,14 +9,14 @@ authors = [
 ]
 dependencies = [
   "flet==0.28.3",
-  "winrt-Windows.Media",
-  "winrt-Windows.Media.Control",
-  "winrt-Windows.Storage.Streams",
-  "winrt-Windows.Storage",
-  "winrt-Windows.Foundation.Collections",
-  "winrt-Windows.Foundation"
-  "pywin32",
-  
+  "winrt-runtime==3.1.0",
+  "winrt-windows-foundation==3.1.0",
+  "winrt-windows-foundation-collections==3.1.0",
+  "winrt-windows-media==3.1.0",
+  "winrt-windows-media-control==3.1.0",
+  "winrt-windows-storage==3.1.0",
+  "winrt-windows-storage-streams==3.1.0",
+  "pywin32"
 ]
 
 [tool.flet]
@@ -40,6 +40,14 @@ path = "src"
 [tool.uv]
 dev-dependencies = [
     "flet[all]==0.28.3",
+    "winrt-runtime==3.1.0",
+    "winrt-windows-foundation==3.1.0",
+    "winrt-windows-foundation-collections==3.1.0",
+    "winrt-windows-media==3.1.0",
+    "winrt-windows-media-control==3.1.0",
+    "winrt-windows-storage==3.1.0",
+    "winrt-windows-storage-streams==3.1.0",
+    "pywin32"
 ]
 
 [tool.poetry]
