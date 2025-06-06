@@ -7,7 +7,7 @@ class SoundControl(ft.Container):
     def __init__(self, music_cover_base64 = None,on_pause=None,on_play=None, on_next=None, on_prev=None):
         super().__init__()
         self.music_cover_base64 = music_cover_base64
-        self.padding = 4
+        self.clip_behavior = ft.ClipBehavior.ANTI_ALIAS_WITH_SAVE_LAYER
         self.is_playing = False
         self.on_pause = on_pause
         self.on_play = on_play
@@ -67,6 +67,8 @@ class SoundControl(ft.Container):
     def change_music_cover(self, music_cover_base64):
         self.music_cover_base64 = music_cover_base64
         self.music_cover.content = ft.Image(src_base64=self.music_cover_base64)
+        self.image_bg_cover.src_base64 = self.music_cover_base64
+        self.image_bg_cover.update()
         self.music_cover.update()
     
     def __content(self):
@@ -92,8 +94,25 @@ class SoundControl(ft.Container):
             on_click=self.__on_prev,
         )
 
-        return ft.Stack([
-            self.music_cover,
+        self.image_bg_cover = ft.Image(scale=10)
+        self.stack_bg = ft.Stack([
+            self.image_bg_cover,
+            ft.Container(
+                width=500,
+                height=500,
+                blur=ft.Blur(
+                    sigma_x=10,
+                    sigma_y=10,
+                    tile_mode=ft.BlurTileMode.REPEATED
+                ),
+                bgcolor="black,0.5"
+            )
+        ],alignment=ft.alignment.center)
+
+        self.whole_stack = ft.Stack([
+            self.stack_bg,
+            
+            ft.Container(self.music_cover,padding=4),
             ft.Row([
                 prev_track,
                 self.play_pause,
@@ -101,3 +120,5 @@ class SoundControl(ft.Container):
             ],alignment=ft.MainAxisAlignment.CENTER),
 
         ])
+
+        return self.whole_stack

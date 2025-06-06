@@ -73,7 +73,7 @@ Build & publish documentation:
 
 ## Future Plans
 
-- [ ] **Cover Background**: Add a primary color thumbnail to replace the plain black background.
+- [x] **Cover Background**: Add a primary color thumbnail to replace the plain black background.
 - [ ] **Shared Clipboard**: Implement a shared clipboard feature to allow files from different folders to be added to the island and then dragged to a single location.
 - [ ] **Notifications**: Explore the possibility of integrating system notifications into the Dynamic Island.
 - [ ] **Screenshot Detection**: Enable detection of screenshots for easy drag-and-drop functionality using the mouse.

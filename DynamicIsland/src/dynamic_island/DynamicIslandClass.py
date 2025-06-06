@@ -5,11 +5,17 @@ from animation_functions.AnimationManager import AnimationManager
 from layers.DynamicIslandIn import DynamicIislandIn
 from layers.music import SoundControl
 from functions.media_checker import MediaPlayerController
+import base64
+import io
+from PIL import Image
+import numpy as np
+from collections import Counter
 
 class DynamicIslandApp(ft.Container):
     def __init__(self):
         super().__init__()
         self.expand = True
+        self.clip_behavior = ft.ClipBehavior.ANTI_ALIAS_WITH_SAVE_LAYER
         self.alignment = ft.alignment.top_center
         self.animation_manager = AnimationManager(scale_factor=70)
         self.animation_manager.load_animation("open", "frames_open")
@@ -68,6 +74,7 @@ class DynamicIslandApp(ft.Container):
     def play_animation(self, name, speed=0.01, start_frame=1, end_frame=None):
             return self.page.run_thread(self.__play_animation,name, speed, start_frame, end_frame)
 
+
     async def reset_animation(self):
         """Reset the animation asynchronously"""
         animate = ft.Animation(duration=300, curve=ft.AnimationCurve.LINEAR_TO_EASE_OUT)
@@ -110,7 +117,7 @@ class DynamicIslandApp(ft.Container):
             border_radius=ft.border_radius.only(
                 bottom_left=self.height_dynamic/2,
                 bottom_right=self.height_dynamic/2
-            ),
+            ), 
             content=self.layer,
             animate=ft.Animation(duration=2)
         )
@@ -158,9 +165,37 @@ class DynamicIslandApp(ft.Container):
         except Exception as e:
             print(f"Error in init_sound: {e}")
 
-    # def did_mount(self):
-    #     """Schedule the async init_sound coroutine"""
-    #     self.page.run_task(self.init_sound)
+    def get_dominant_color(self, base64_string):
+        try:
+            img_data = base64.b64decode(base64_string)
+            img = Image.open(io.BytesIO(img_data))
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+                
+            img = img.resize((100, 100))
+            pixels = np.array(img)
+            pixels = pixels.reshape(-1, 3)
+            
+            brightness = 0.299 * pixels[:, 0] + 0.587 * pixels[:, 1] + 0.114 * pixels[:, 2]
+            
+            brightness_threshold = np.percentile(brightness, 90)
+            bright_pixels = pixels[brightness >= brightness_threshold]
+            
+            if len(bright_pixels) == 0:
+                count = Counter(map(tuple, pixels))
+                most_common_color = count.most_common(1)[0][0]
+                hex_color = '#{:02x}{:02x}{:02x}'.format(*most_common_color)
+                return hex_color
+                
+            count = Counter(map(tuple, bright_pixels))
+            most_common_bright_color = count.most_common(1)[0][0]
+            
+            hex_color = '#{:02x}{:02x}{:02x}'.format(*most_common_bright_color)
+            return hex_color
+            
+        except Exception as e:
+            print(f"Error extracting dominant color: {e}")
+            return "black"  # Default to white on error
 
 
 class ControlDynamicIsland(DynamicIslandApp):
@@ -189,6 +224,7 @@ class ControlDynamicIsland(DynamicIslandApp):
             await self.reset_animation()
             self.content_control.change_music_cover(music_cover_base64)
             self.page.run_thread(self.play_animation,"show_side")
+            await self.layer.change_bgcolor(self.get_dominant_color(music_cover_base64))
             await asyncio.sleep(0.2)
             await layer.animate_layer()
             self.is_playing = True
